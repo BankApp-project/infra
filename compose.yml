@@ -2,31 +2,52 @@
 # Containers on this network can reach each other using their service names as hostnames.
 # For example, Nginx can proxy requests to 'postgres:5432'.
 
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
+  certbot_etc:
+
 networks:
   bankapp-infra:
     external: true # Tells Compose this network is created manually and not to be removed with 'down'
 
 services:
-  #  nginx:
-  #   image: nginx:latest
-  #   container_name: nginx_proxy
-  #   ports:
-  #    - "${NGINX_HTTP_PORT}:80"
-  #    - "${NGINX_HTTPS_PORT}:443"
-  #   volumes:
-  #    - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-  #   depends_on:
-  #    - postgres
-  #    - redis
-  #    - rabbitmq
-  #   restart: unless-stopped
-  #   healthcheck:
-  #    test: ["CMD", "nginx", "-t"]
-  #    interval: 30s
-  #    timeout: 10s
-  #    retries: 3
-  #   networks:
-  #    - bankapp-infra
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    networks:
+      - bankapp-infra
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARED_TUNNEL_TOKEN} 
+
+  nginx:
+    image: nginx:1.29.0
+    container_name: nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - certbot_etc:/etc/letsencrypt
+    networks:
+      - bankapp-infra
+    restart: unless-stopped
+    depends_on: 
+      - cloudflared
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  certbot:
+    image: certbot/dns-cloudflare:latest
+    container_name: certbot
+    volumes:
+      - certbot_etc:/etc/letsencrypt
+      - ./cloudflare.ini:/etc/letsencrypt/cloudflare.ini:ro
 
   postgres:
     image: postgres:16
@@ -88,10 +109,4 @@ services:
     networks:
       - bankapp-infra
 
-volumes:
-  postgres_data:
-    driver: local
-  redis_data:
-    driver: local
-  rabbitmq_data:
-    driver: local
+

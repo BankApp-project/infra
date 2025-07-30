@@ -1,0 +1,97 @@
+# All services in this file will join the 'bankapp-infra' network.
+# Containers on this network can reach each other using their service names as hostnames.
+# For example, Nginx can proxy requests to 'postgres:5432'.
+
+networks:
+  bankapp-infra:
+    external: true # Tells Compose this network is created manually and not to be removed with 'down'
+
+services:
+  #  nginx:
+  #   image: nginx:latest
+  #   container_name: nginx_proxy
+  #   ports:
+  #    - "${NGINX_HTTP_PORT}:80"
+  #    - "${NGINX_HTTPS_PORT}:443"
+  #   volumes:
+  #    - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+  #   depends_on:
+  #    - postgres
+  #    - redis
+  #    - rabbitmq
+  #   restart: unless-stopped
+  #   healthcheck:
+  #    test: ["CMD", "nginx", "-t"]
+  #    interval: 30s
+  #    timeout: 10s
+  #    retries: 3
+  #   networks:
+  #    - bankapp-infra
+
+  postgres:
+    image: postgres:16
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # No ports need to be published to the host if only other containers need to access it.
+    # We leave it here for potential external admin access.
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - bankapp-infra
+
+  redis:
+    image: redis:7
+    container_name: redis_cache
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "${REDIS_PORT}:6379"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - bankapp-infra
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_broker
+    hostname: ${RABBITMQ_NODE_HOSTNAME}
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    ports:
+      - "${RABBITMQ_AMQP_PORT}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - bankapp-infra
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  rabbitmq_data:
+    driver: local

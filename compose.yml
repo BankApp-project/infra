@@ -96,8 +96,7 @@ services:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     ports:
-      - "${RABBITMQ_AMQP_PORT}:5672"
-      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
+      - "127.0.0.1:${RABBITMQ_MANAGEMENT_PORT}:15672"
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     restart: unless-stopped

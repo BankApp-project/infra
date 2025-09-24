@@ -107,6 +107,14 @@ services:
       retries: 5
     networks:
       - bankapp-infra
+
+  bankapp-notification-service:
+    image: bankappproject/bankapp-notification-service
+    container_name: bankapp-notification-service
+    networks:
+      - bankapp-infra
+    depends_on:
+      - rabbitmq
   
   bankapp-auth-service:
     image: bankappproject/bankapp-auth-service
@@ -116,4 +124,5 @@ services:
     depends_on:
       - rabbitmq
       - redis
-      - postgres 
+      - postgres
+      - bankapp-notification-service

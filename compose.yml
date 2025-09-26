@@ -14,6 +14,10 @@ volumes:
 networks:
   bankapp-infra:
     external: true # Tells Compose this network is created manually and not to be removed with 'down'
+  nginx-net:
+    external: true
+  bankapp_bankapp-net:
+    external: true
 
 services:
   cloudflared:
@@ -33,6 +37,7 @@ services:
       - certbot_etc:/etc/letsencrypt
     networks:
       - bankapp-infra
+      - bankapp_bankapp-net
     restart: unless-stopped
     depends_on: 
       - cloudflared
@@ -108,21 +113,4 @@ services:
     networks:
       - bankapp-infra
 
-  bankapp-notification-service:
-    image: bankappproject/bankapp-notification-service
-    container_name: bankapp-notification-service
-    networks:
-      - bankapp-infra
-    depends_on:
-      - rabbitmq
-  
-  bankapp-auth-service:
-    image: bankappproject/bankapp-auth-service
-    container_name: bankapp-auth-service
-    networks:
-      - bankapp-infra
-    depends_on:
-      - rabbitmq
-      - redis
-      - postgres
-      - bankapp-notification-service
+

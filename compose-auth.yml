@@ -1,0 +1,19 @@
+services:
+  bankapp-notification-service:
+    image: bankappproject/bankapp-notification-service
+    container_name: bankapp-notification-service
+    networks:
+      - bankapp-infra
+    depends_on:
+      - rabbitmq
+  
+  bankapp-auth-service:
+    image: bankappproject/bankapp-auth-service
+    container_name: bankapp-auth-service
+    networks:
+      - bankapp-infra
+    depends_on:
+      - rabbitmq
+      - redis
+      - postgres
+      - bankapp-notification-service

@@ -14,8 +14,6 @@ volumes:
 networks:
   bankapp-infra:
     external: true # Tells Compose this network is created manually and not to be removed with 'down'
-  nginx-net:
-    external: true
   bankapp_bankapp-net:
     external: true
 
@@ -56,7 +54,7 @@ services:
 
   postgres:
     image: postgres:16
-    container_name: postgres_db
+    container_name: bankapp_postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -66,7 +64,7 @@ services:
     # No ports need to be published to the host if only other containers need to access it.
     # We leave it here for potential external admin access.
     ports:
-      - "${POSTGRES_PORT}:5432"
+      - "15432:${POSTGRES_PORT}"
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
@@ -75,10 +73,11 @@ services:
       retries: 5
     networks:
       - bankapp-infra
+    env_file: ".env"
 
   redis:
     image: redis:7
-    container_name: redis_cache
+    container_name: bankapp_redis
     command: redis-server --requirepass ${REDIS_PASSWORD}
     volumes:
       - redis_data:/data
@@ -92,10 +91,11 @@ services:
       retries: 5
     networks:
       - bankapp-infra
+    env_file: ".env"
 
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: rabbitmq_broker
+    container_name: bankapp_rabbitmq
     hostname: ${RABBITMQ_NODE_HOSTNAME}
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
@@ -112,5 +112,26 @@ services:
       retries: 5
     networks:
       - bankapp-infra
+    env_file: ".env"
 
 
+  bankapp-notification-service:
+    image: bankappproject/bankapp-notification-service:1.0.0
+    container_name: bankapp-notification-service
+    networks:
+      - bankapp-infra
+    depends_on:
+      - rabbitmq
+    env_file: ".env"
+  
+  bankapp-auth-service:
+    image: bankappproject/bankapp-auth-service:1.0.0
+    container_name: bankapp-auth-service
+    networks:
+      - bankapp-infra
+    depends_on:
+      - bankapp-notification-service
+      - postgres
+      - rabbitmq
+      - redis
+    env_file: ".env"

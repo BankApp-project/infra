@@ -1,19 +1,19 @@
+networks:
+  bankapp-infra:
+    external: true
+
 services:
   bankapp-notification-service:
-    image: bankappproject/bankapp-notification-service
+    image: bankappproject/bankapp-notification-service:1.0
     container_name: bankapp-notification-service
     networks:
       - bankapp-infra
-    depends_on:
-      - rabbitmq
   
   bankapp-auth-service:
-    image: bankappproject/bankapp-auth-service
+    image: bankappproject/bankapp-auth-service:1.0
     container_name: bankapp-auth-service
     networks:
       - bankapp-infra
     depends_on:
-      - rabbitmq
-      - redis
-      - postgres
       - bankapp-notification-service
+    env_file: ".env"

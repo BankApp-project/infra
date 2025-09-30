@@ -1,0 +1,6 @@
+[submodule "frontend"]
+	path = frontend
+	url = git@github.com:BankApp-project/bankapp-auth-frontend.git
+[submodule "auth-frontend"]
+	path = auth-frontend
+	url = git@github.com:BankApp-project/bankapp-auth-frontend.git

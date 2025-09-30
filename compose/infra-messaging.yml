@@ -29,4 +29,4 @@ services:
       retries: 5
     networks:
       - bankapp-infra
-    env_file: ".env"
+    env_file: "infra-messaging.env"

@@ -1,2 +1,2 @@
-.env
+*.env
 cloudflare.ini

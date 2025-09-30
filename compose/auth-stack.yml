@@ -15,10 +15,6 @@ services:
   postgres:
     image: postgres:16
     container_name: bankapp_postgres
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
@@ -31,7 +27,7 @@ services:
       retries: 5
     networks:
       - bankapp-infra
-    env_file: ".env"
+    env_file: "auth-stack.env"
 
   redis:
     image: redis:7
@@ -49,7 +45,7 @@ services:
       retries: 5
     networks:
       - bankapp-infra
-    env_file: ".env"
+    env_file: "auth-stack.env"
 
   bankapp-auth-service:
     image: bankappproject/bankapp-auth-service:1.0.0
@@ -59,5 +55,5 @@ services:
     depends_on:
       - postgres
       - redis
-    env_file: ".env"
+    env_file: "auth-stack.env"
     pull_policy: always

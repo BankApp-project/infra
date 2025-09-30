@@ -11,5 +11,5 @@ services:
     container_name: bankapp-notification-service
     networks:
       - bankapp-infra
-    env_file: ".env"
+    env_file: "notification-service.env"
     pull_policy: always

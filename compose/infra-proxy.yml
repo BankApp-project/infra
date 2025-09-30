@@ -17,26 +17,6 @@ services:
     restart: unless-stopped
     command: tunnel --no-autoupdate run --token ${CLOUDFLARED_TUNNEL_TOKEN}
 
-  nginx:
-    image: nginx:1.29.0
-    container_name: nginx
-    volumes:
-      - ../nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ../nginx/conf.d:/etc/nginx/conf.d:ro
-      - certbot_etc:/etc/letsencrypt
-      - ../auth-frontend:/var/www/auth-fe
-    networks:
-      - bankapp-infra
-    restart: unless-stopped
-    depends_on:
-      - cloudflared
-      - certbot
-    healthcheck:
-      test: ["CMD", "nginx", "-t"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
   certbot:
     image: certbot/dns-cloudflare:latest
     container_name: certbot
@@ -55,3 +35,27 @@ services:
       --domains bankapp.online
       --expand
     restart: "no"  # Only run once, not continuously
+
+  nginx:
+    image: nginx:1.29.0
+    container_name: nginx
+    volumes:
+      - ../nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../nginx/conf.d:/etc/nginx/conf.d:ro
+      - certbot_etc:/etc/letsencrypt
+      - ../auth-frontend:/var/www/auth-fe
+    networks:
+      - bankapp-infra
+    restart: unless-stopped
+    depends_on:
+      cloudflared:
+        condition: service_started
+      certbot:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+

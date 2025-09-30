@@ -1,4 +1,4 @@
 .env
 cloudflare.ini
 .idea
-/auth-frontend
+/bankapp-auth-frontend

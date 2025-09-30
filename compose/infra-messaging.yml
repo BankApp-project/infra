@@ -1,0 +1,32 @@
+# Message Queue Infrastructure
+# Shared messaging platform for all services
+
+volumes:
+  rabbitmq_data:
+    driver: local
+
+networks:
+  bankapp-infra:
+    external: true
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: bankapp_rabbitmq
+    hostname: ${RABBITMQ_NODE_HOSTNAME}
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    ports:
+      - "127.0.0.1:${RABBITMQ_MANAGEMENT_PORT}:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - bankapp-infra
+    env_file: ".env"

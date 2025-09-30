@@ -1,3 +1,4 @@
 .env
 cloudflare.ini
 .idea
+/auth-frontend

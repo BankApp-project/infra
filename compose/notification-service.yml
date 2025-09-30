@@ -1,0 +1,15 @@
+# Notification Service
+# Consumes messages from RabbitMQ and sends notifications
+
+networks:
+  bankapp-infra:
+    external: true
+
+services:
+  bankapp-notification-service:
+    image: bankappproject/bankapp-notification-service:1.0.0
+    container_name: bankapp-notification-service
+    networks:
+      - bankapp-infra
+    env_file: ".env"
+    pull_policy: always

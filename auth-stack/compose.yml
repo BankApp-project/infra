@@ -27,7 +27,7 @@ services:
       retries: 5
     networks:
       - bankapp-infra
-    env_file: "auth-stack.env"
+    env_file: ".env"
 
   redis:
     image: redis:7
@@ -45,7 +45,7 @@ services:
       retries: 5
     networks:
       - bankapp-infra
-    env_file: "auth-stack.env"
+    env_file: ".env"
 
   bankapp-auth-service:
     image: bankappproject/bankapp-auth-service:1.0.0
@@ -55,5 +55,5 @@ services:
     depends_on:
       - postgres
       - redis
-    env_file: "auth-stack.env"
+    env_file: ".env"
     pull_policy: always

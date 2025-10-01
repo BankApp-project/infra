@@ -7,7 +7,7 @@ networks:
 
 services:
   bankapp-notification-service:
-    image: bankappproject/bankapp-notification-service:1.0.0
+    image: bankappproject/bankapp-notification-service:latest
     container_name: bankapp-notification-service
     networks:
       - bankapp-infra

@@ -1,5 +1,3 @@
 *.env
-.env
-cloudflare.ini
 .idea
 /bankapp-auth-frontend

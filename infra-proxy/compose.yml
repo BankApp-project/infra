@@ -59,7 +59,7 @@ services:
         condition: service_completed_successfully
     healthcheck:
       test: ["CMD", "nginx", "-t"]
-      interval: 30s
+      interval: 10s
       timeout: 10s
       retries: 3
     env_file: ".env"

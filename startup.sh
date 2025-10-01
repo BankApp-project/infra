@@ -9,15 +9,15 @@ echo "Cloning frontend repository..."
 ./clone-fe.sh
 
 echo "Starting infra-proxy..."
-cd infra-proxy && docker compose up -d && cd ..
+cd infra-proxy && docker compose up -d --wait && cd ..
 
 echo "Starting infra-messaging..."
-cd infra-messaging && docker compose up -d && cd ..
+cd infra-messaging && docker compose up -d --wait && cd ..
 
 echo "Starting auth-service..."
-cd auth-service && docker compose up -d && cd ..
+cd auth-service && docker compose up -d --wait && cd ..
 
 echo "Starting notification-service..."
-cd notification-service && docker compose up -d && cd ..
+cd notification-service && docker compose up -d --wait && cd ..
 
 echo "All services started successfully!"

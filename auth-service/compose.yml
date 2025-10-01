@@ -48,7 +48,7 @@ services:
     env_file: ".env"
 
   bankapp-auth-service:
-    image: bankappproject/bankapp-auth-service:1.0.0
+    image: bankappproject/bankapp-auth-service:latest
     container_name: bankapp-auth-service
     networks:
       - bankapp-infra
@@ -58,4 +58,9 @@ services:
       redis:
         condition: service_healthy
     pull_policy: always
+#    healthcheck:
+#      test: ["cmd-shell", "wget -q -o - http://localhost:8080/actuator/health | grep -q '\"status\":\"up\"' || exit 1"]
+#      interval: 10s
+#      timeout: 10s
+#      retries: 5
     env_file: ".env"

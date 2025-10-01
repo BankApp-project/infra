@@ -13,10 +13,6 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
     container_name: bankapp_rabbitmq
-    hostname: ${RABBITMQ_NODE_HOSTNAME}
-    environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     ports:
       - "127.0.0.1:${RABBITMQ_MANAGEMENT_PORT}:15672"
     volumes:
@@ -29,4 +25,4 @@ services:
       retries: 5
     networks:
       - bankapp-infra
-    env_file: "infra-messaging.env"
+    env_file: ".env"

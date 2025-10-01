@@ -47,7 +47,7 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - certbot_etc:/etc/letsencrypt
-      - ./bankapp-auth-frontend:/var/www/auth-fe
+      - ../bankapp-auth-frontend:/var/www/auth-fe
     networks:
       - bankapp-infra
       - bankapp-proxy

@@ -1,3 +1,4 @@
 *.env
 .idea
 /bankapp-auth-frontend
+/auth-service/.env.new
